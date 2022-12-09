@@ -1,0 +1,12 @@
+{
+  "name": "com.littlebitgames.inventory",
+  "displayName": "Inventory Module",
+  "version": "1.2.5",
+  "unity": "2021.1",
+  "unityRelease": "6f1",
+  "description": "Inventory",
+  "category": "Module",
+  "author": {
+    "name": "LittleBitGames"
+  }
+}
