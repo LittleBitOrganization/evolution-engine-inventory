@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657815, g: 0.49641192, b: 0.57481617, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -202,7 +202,6 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -217,6 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1442830657}
   - component: {fileID: 1442830656}
+  - component: {fileID: 1442830658}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -250,11 +250,30 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1442830658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442830655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c4f3ec87d2481a8dcbaec04f35f49c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _inventoryConfig: {fileID: 11400000, guid: e103bc2c486d8654ea709717c50e848f, type: 2}
+  _item_5x2: {fileID: 11400000, guid: 8b5635e8e9210224ba874524bbde9f1c, type: 2}
+  _item_4x1: {fileID: 11400000, guid: d8f0dba222e184547bfd0b6b5a00be44, type: 2}
+  _item_3x1: {fileID: 11400000, guid: af4413d789dce734db170fffb0ec5a97, type: 2}
+  _item_2x2: {fileID: 11400000, guid: db9b00bd42d54f249a90284172b3a55d, type: 2}
+  _item_2x1: {fileID: 11400000, guid: ae3d259a20eef264a9508fca9e622bb6, type: 2}
+  _item_1x3: {fileID: 11400000, guid: 737a670f116af0c4188f71f293629af5, type: 2}
+  _item_1x1: {fileID: 11400000, guid: 39f74c278955dc44f8ba58720487de3f, type: 2}
 --- !u!1 &1574793897
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +363,6 @@ Transform:
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1

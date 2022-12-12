@@ -13,11 +13,14 @@ namespace Models
 
         private Dictionary<string, List<SlotItem>> _containerSlots;
 
+        private PackingInventory _packingInventory;
+
         public InventoryModel(InventoryConfig inventoryConfig)
         {
             _inventoryConfig = inventoryConfig;
             _containerSlots = new Dictionary<string, List<SlotItem>>();
             _matrix = new Matrix(_inventoryConfig.Size.x, _inventoryConfig.Size.y, _inventoryConfig.Size.z);
+           
             _matrix.Log();
         }
 
@@ -81,7 +84,7 @@ namespace Models
         }
         private SlotItem CreateSlot(InventoryItem item, List<Cell> cells)
         {
-            var slot = new SlotItem(item.Key, item.Weight, cells);
+            var slot = new SlotItem(item, item.Weight, cells);
             slot.OnDispose += RemoveSlot;
             GetSlots(item).Add(slot);
 
@@ -98,6 +101,7 @@ namespace Models
 
     public sealed class SlotItem : IDisposable
     {
+        private readonly InventoryItem _item;
         private readonly int _weight;
         private readonly List<Cell> _cells;
         public readonly int Hash;
@@ -105,22 +109,26 @@ namespace Models
 
         private readonly Cell _head;
         public event Action<string, SlotItem> OnDispose;
+
+        public Vector2Int Size => _item.Size;
+        public Vector2Int Position => _head.Position;
         
         
         
-        public SlotItem(string key, int weight, List<Cell> cells)
+        public SlotItem(InventoryItem item, int weight, List<Cell> cells)
         {
+            _item = item;
             _weight = weight;
             _cells = cells;
             Hash = GetHashCode();
-            Key = key;
+            Key = item.Key;
             
 
             foreach (var cell in _cells)
             {
                 cell.SetWeight(_weight);
                 cell.SetHash(Hash);
-                cell.SetId(key);
+                cell.SetId(Key);
             }
             
             _head = _cells.First();
@@ -220,7 +228,7 @@ namespace Models
             _cells = new Cell[x, y];
             Foreach((i, j) =>
             {
-                _cells[i, j] = new Cell(z);
+                _cells[i, j] = new Cell(z, new Vector2Int(i, j));
             });
          
         }
@@ -334,6 +342,7 @@ namespace Models
     public class Cell : IDisposable
     {
         private readonly int _capacity;
+     
         private int _value;
         private int _hashSlot;
 
@@ -345,13 +354,16 @@ namespace Models
         public string Id { get; private set; }
 
         public int HashSlot => _hashSlot;
+        
+        public Vector2Int Position { get; private set; }
 
         
 
         public int Weight { get; private set; } = 1;
 
-        public Cell(int capacity)
+        public Cell(int capacity, Vector2Int position)
         {
+            Position = position;
             _capacity = capacity;
             _value = 0;
             _hashSlot = -1;

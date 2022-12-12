@@ -1,4 +1,5 @@
 
+using System;
 using Configs;
 using Models;
 using NaughtyAttributes;
@@ -8,15 +9,21 @@ namespace Demo
 {
     public class TestInstaller : MonoBehaviour
     {
+
         [SerializeField] private InventoryConfig _inventoryConfig;
         [SerializeField] private InventoryItemConfig _inventoryItem1;
         [SerializeField] private InventoryItemConfig _inventoryItem2;
         [SerializeField] private InventoryItemConfig _inventoryItem3;
 
         private InventoryModel _model;
+        private PackingInventory _packingInventory;
+
+
         private void Awake()
         {
             _model = new InventoryModel(_inventoryConfig);
+            
+           
         }
 
         [Button()]
