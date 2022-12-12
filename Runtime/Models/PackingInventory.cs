@@ -35,11 +35,14 @@ namespace Models
             
             while (true)
             {
-                if (_height - CurrentRow < 0) return false;
+                if (_height - CurrentRow <= 0) return false;
                 if(_items.Count == 0) return true;
                 
                 
                 var sector = FillVerticalSector();
+                EmptySlotsInSector(sector);
+                sector.Log();
+                
                 CurrentRow += sector.Height;
             }
         }
@@ -64,9 +67,8 @@ namespace Models
                     _items.Remove(item);
                 }
             }
-            
-            EmptySlotsInSector(mainSector);
-            mainSector.Log();
+
+           
             return mainSector;
 
         }
@@ -106,6 +108,8 @@ namespace Models
                 
                 if(isChange)
                     mainSector.Join(subSector);
+                else 
+                    mainSector.Erase(subSector);
             }
         }
 
@@ -257,6 +261,19 @@ namespace Models
                 _freeSpace[index] -= subSectorHeight - freeSpaceInSubSector;
             }
         }
+        
+        public void Erase(Sector subSector)
+        {
+            var subSectorFreeSpace = subSector._freeSpace;
+            var subSectorHeight = subSector._height;
+
+            for (int i = 0; i < subSectorFreeSpace.Length; i++)
+            {
+                var freeSpaceInSubSector = subSectorFreeSpace[i];
+                int index = subSector._indexXStart + i;
+                _freeSpace[index] -= freeSpaceInSubSector;
+            }
+        }
 
         public void Log()
         {
@@ -269,6 +286,8 @@ namespace Models
             }
             Debug.LogError(log);
         }
+
+      
     }
 
     internal class SlotItemComparer : IComparer<SlotItem>

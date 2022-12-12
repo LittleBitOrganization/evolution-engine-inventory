@@ -62,8 +62,8 @@ namespace Demo
             
             Add1x1();
             
-            Add1x3();
-            Add1x3();
+            // Add1x3();
+            // Add1x3();
             
 
         }
@@ -71,6 +71,8 @@ namespace Demo
         {
             _packingInventory =
                 new PackingInventory(_inventoryConfig.Size.x, _inventoryConfig.Size.y, SlotItems);
+            
+
             if (_packingInventory.TryPacking())
             {
                 Debug.LogError("Successfully");
