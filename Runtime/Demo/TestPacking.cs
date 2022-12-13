@@ -73,7 +73,7 @@ namespace Demo
                 new PackingInventory(_inventoryConfig.Size.x, _inventoryConfig.Size.y, SlotItems);
             
 
-            if (_packingInventory.TryPacking())
+            if (_packingInventory.CheckPackingAndPrepare())
             {
                 Debug.LogError("Successfully");
             }

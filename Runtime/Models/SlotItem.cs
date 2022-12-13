@@ -9,11 +9,11 @@ namespace Models
     {
         private readonly InventoryItem _item;
         private readonly int _weight;
-        private readonly List<Cell> _cells;
+        private List<Cell> _cells;
         public readonly int Hash;
         public string Key { get; }
 
-        private readonly Cell _head;
+        private Cell _head;
         public event Action<string, SlotItem> OnDispose;
 
         public Vector2Int Size => _item.Size;
@@ -25,11 +25,17 @@ namespace Models
         {
             _item = item;
             _weight = weight;
-            _cells = cells;
+          
             Hash = GetHashCode();
             Key = item.Key;
             
+            AddNewCells(cells);
+        }
 
+        public void AddNewCells(List<Cell> cells)
+        {
+            _cells = cells;
+            
             foreach (var cell in _cells)
             {
                 cell.SetWeight(_weight);
@@ -110,6 +116,11 @@ namespace Models
                 if(_head.Value == 0)
                     Dispose();
             }
+        }
+
+        public void MoveToPosition(int i, int j)
+        {
+            
         }
     }
 }

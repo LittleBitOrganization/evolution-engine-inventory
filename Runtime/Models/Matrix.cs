@@ -7,16 +7,21 @@ namespace Models
 {
     public class Matrix
     {
+        private readonly int _z;
         private Cell[,] _cells;
         
         public Matrix(int x, int y, int z)
         {
+            _z = z;
             _cells = new Cell[x, y];
+            
+        }
+        public void Init()
+        {
             Foreach((i, j) =>
             {
-                _cells[i, j] = new Cell(z, new Vector2Int(i, j));
+                _cells[i, j] = new Cell(_z, new Vector2Int(i, j));
             });
-         
         }
 
         public List<Cell> FindAvailableCells(Vector2Int inventoryItemSize, int weight)
@@ -120,6 +125,39 @@ namespace Models
                     index?.Invoke(i, j);
                 }
             }
+        }
+
+        public void InitAfterRepackingSlots(List<SlotItemInfo> repackingSlots)
+        {
+            foreach (var repackingSlot in repackingSlots)
+            {
+                var indexStartX = repackingSlot.IndexStartX;
+                var indexStartY = repackingSlot.IndexStartY;
+                
+                var width = repackingSlot.Width;
+                var height = repackingSlot.Height;
+
+                var indexEndX = indexStartX + width;
+                var indexEndY = indexStartY + height;
+
+                List<Cell> cells = new List<Cell>();
+                for (int i = indexStartX; i < indexEndX; i++)
+                {
+                    for (int j = indexStartY; j < indexEndY; j++)
+                    {
+                        _cells[i, j] = new Cell(_z, new Vector2Int(i, j));
+                        cells.Add(_cells[i,j]);
+                        
+                    }
+                }
+                repackingSlot.SlotItem.AddNewCells(cells);
+            }
+            
+            Foreach((i, j) =>
+            {
+                if(_cells[i,j] == null)
+                    _cells[i,j] = new Cell(_z, new Vector2Int(i, j));
+            });
         }
     }
 }

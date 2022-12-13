@@ -29,7 +29,7 @@ namespace Demo
         [Button()]
         private void AddItem1()
         {
-            _model.AddInventoryItem(new InventoryItem(_inventoryItem1));
+            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem1));
             
         }
 
@@ -42,7 +42,7 @@ namespace Demo
         [Button()]
         private void AddItem2()
         {
-            _model.AddInventoryItem(new InventoryItem(_inventoryItem2));
+            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem2));
             
         }
 
@@ -55,7 +55,7 @@ namespace Demo
         [Button()]
         private void AddItem3()
         {
-            _model.AddInventoryItem(new InventoryItem(_inventoryItem3));
+            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem3));
         }
 
         [Button()]

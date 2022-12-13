@@ -20,6 +20,7 @@ namespace Models
             _width = width;
             _height = height;
             _items = new List<SlotItem>();
+            _repackingSlots = new List<SlotItemInfo>();
 
             foreach (var item in items)
             {
@@ -27,12 +28,12 @@ namespace Models
             }
         }
 
-        public void Packing()
+        public void Packing(Matrix matrix)
         {
-            
+            matrix.InitAfterRepackingSlots(_repackingSlots);
         }
 
-        public bool TryPacking()
+        public bool CheckPackingAndPrepare()
         {
             _items.Sort(new SlotItemComparer());
 
@@ -42,7 +43,6 @@ namespace Models
             {
                 if (_height - CurrentRow <= 0) return false;
                 if(_items.Count == 0) return true;
-                
                 
                 var sector = FillVerticalSector();
                 EmptySlotsInSector(sector);
@@ -133,6 +133,9 @@ namespace Models
     {
         public readonly int IndexStartX;
         public readonly int IndexStartY;
+        public int Width => SlotItem.Size.x;
+        public int Height => SlotItem.Size.y;
+        
         public readonly SlotItem SlotItem;
 
         public SlotItemInfo(int indexStartX, int indexStartY, SlotItem slotItem)
