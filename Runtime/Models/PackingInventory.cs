@@ -12,6 +12,7 @@ namespace Models
         private readonly List<SlotItem> _items;
 
         private int CurrentRow;
+        private List<SlotItemInfo> _repackingSlots;
 
 
         public PackingInventory(int width, int height, List<SlotItem> items)
@@ -26,6 +27,10 @@ namespace Models
             }
         }
 
+        public void Packing()
+        {
+            
+        }
 
         public bool TryPacking()
         {
@@ -60,17 +65,16 @@ namespace Models
                     break;
 
                 var item = queue.Dequeue();
-                if (mainSector.TryAddToLeftDown(item))
+                
+                var itemInfo = mainSector.TryAddToLeftDown(item);
+                if (itemInfo != null)
                 {
-                    //TODO Изменить позицию слот итема
-                   
+                   _repackingSlots.Add(itemInfo);
                     _items.Remove(item);
                 }
             }
 
-           
             return mainSector;
-
         }
 
         private void EmptySlotsInSector(Sector mainSector)
@@ -98,11 +102,12 @@ namespace Models
                     }
                       
                     var item = queue.Dequeue();
-                    if (subSector.TryAddToLeftDown(item))
+                    SlotItemInfo itemInfo = subSector.TryAddToLeftDown(item);
+                    if (itemInfo != null)
                     {
+                        _repackingSlots.Add(itemInfo);
                         isChange = true;
                         _items.Remove(item);
-                        Debug.LogError($"Add {item.Size}");
                     }
                 }
                 
@@ -121,6 +126,20 @@ namespace Models
             var height = Math.Min(firstItem.Size.y, emptySpace);
             
             return new Sector(_width, height, 0, CurrentRow);
+        }
+    }
+
+    public class SlotItemInfo
+    {
+        public readonly int IndexStartX;
+        public readonly int IndexStartY;
+        public readonly SlotItem SlotItem;
+
+        public SlotItemInfo(int indexStartX, int indexStartY, SlotItem slotItem)
+        {
+            IndexStartX = indexStartX;
+            IndexStartY = indexStartY;
+            SlotItem = slotItem;
         }
     }
     
@@ -154,7 +173,7 @@ namespace Models
             return _freeSpace.All(v => v < _height);
         }
 
-        public bool TryAddToLeftDown(SlotItem item)
+        public SlotItemInfo TryAddToLeftDown(SlotItem item)
         {
             var leftIndex = FindLeftIndexWithMaxFreeSpace();
             var widthElement = item.Size.x;
@@ -162,17 +181,17 @@ namespace Models
 
             //Проверка на переполнение по горизонтали
             if (leftIndex + widthElement > _freeSpace.Length)
-                return false;
+                return null;
             //Полвеока на переполнение по вертикали
             if (heightElement > _freeSpace[leftIndex])
-                return false;
+                return null;
 
             for (int i = leftIndex; i < leftIndex + widthElement; i++)
             {
                 _freeSpace[i] -= item.Size.y;
             }
 
-            return true;
+            return new SlotItemInfo(leftIndex, _indexYStart, item);
         }
         
 
