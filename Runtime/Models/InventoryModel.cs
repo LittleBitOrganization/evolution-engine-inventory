@@ -12,6 +12,8 @@ namespace Models
 
         private Dictionary<string, List<SlotItem>> _containerSlots;
 
+        public event Action<List<SlotItem>> OnRepacking;
+
         public InventoryModel(InventoryConfig inventoryConfig)
         {
             _inventoryConfig = inventoryConfig;
@@ -41,76 +43,97 @@ namespace Models
             return slot != null;
         }
 
-        private bool CanRepackingItem(InventoryItem inventoryItem, out PackingInventory inventory)
-        {
-            var packingInventory = CreatePackingInventory();
-            inventory = packingInventory;
-            return packingInventory.CheckPackingAndPrepare();
-        }
-        
-        private bool CanAddItem(InventoryItem inventoryItem)
-        {
-            if (CanStackItem(inventoryItem, out _)) return true;
-            if (CanPlaceInMatrix(inventoryItem, out _)) return true;
-
-            if (CanRepackingItem(inventoryItem, out var packing))
-            {
-                CreateNewMatrix();
-                packing.Packing(_matrix);
-
-                if (CanPlaceInMatrix(inventoryItem, out _)) return true;
-            }
-            
-            return false;
-        }
-
-        private PackingInventory CreatePackingInventory()
+        private bool RepackingInventory(out PackingInventory inventory)
         {
             var slots = new List<SlotItem>();
             foreach (var list in _containerSlots.Values)
             {
                 slots.AddRange(list);
             }
-            return new PackingInventory(_inventoryConfig.Size.x, _inventoryConfig.Size.y, slots);;
+            
+            inventory = new PackingInventory(_inventoryConfig.Size.x, _inventoryConfig.Size.y, slots);;
+            var canRepacking = inventory.CheckPackingAndPrepare();
+            CreateNewMatrix();
+            inventory.Packing(_matrix);
+            
+
+            return canRepacking;
+
         }
 
-        public void TryAddInventoryItem(InventoryItem inventoryItem)
+        
+        // private bool CanAddItem(InventoryItem inventoryItem)
+        // {
+        //     if (CanStackItem(inventoryItem, out _)) return true;
+        //     if (CanPlaceInMatrix(inventoryItem, out _)) return true;
+        //
+        //     if (CanRepackingItem(out var packing))
+        //     {
+        //         CreateNewMatrix();
+        //         packing.Packing(_matrix);
+        //         
+        //        
+        //         
+        //         OnRepacking?.Invoke(slots);
+        //         if (CanPlaceInMatrix(inventoryItem, out _))
+        //         {
+        //             return true;
+        //         }
+        //     }
+        //     
+        //     return false;
+        // }
+        
+        public bool TryAddInventoryItem(InventoryItem inventoryItem, out SlotItem slotItem)
         {
+            slotItem = null;
             if (CanStackItem(inventoryItem, out var slot))
             {
                 slot.TryAdd(inventoryItem, 1);
+                slotItem = slot;
+                _matrix.Log();
+                return true;
             }
             else if (CanPlaceInMatrix(inventoryItem, out var cells))
             {
                 slot = CreateSlot(inventoryItem, cells);
                 slot.TryAdd(inventoryItem, 1);
+                slotItem = slot;
+                _matrix.Log();
+                return true;
             }
-            else if (CanRepackingItem(inventoryItem, out _))
+            else
             {
+                var canRepacking = RepackingInventory(out var packingInventory);
+                Debug.LogError("Repacking");
+                _matrix.Log();
+                var slots = new List<SlotItem>();
+                foreach (var list in _containerSlots.Values)
+                {
+                    slots.AddRange(list);
+                }
+              
+                
                 if (CanPlaceInMatrix(inventoryItem, out cells))
                 {
                     slot = CreateSlot(inventoryItem, cells);
                     slot.TryAdd(inventoryItem, 1);
+                    slotItem = slot;
+                    _matrix.Log();
+                    OnRepacking?.Invoke(slots);
+                    return true;
                 }
+                else
+                {
+                    OnRepacking?.Invoke(slots);
+                }
+                
             }
 
             _matrix.Log();
-            
-            // if (slot == null)
-            // {
-            //     var groupCells = _matrix.FindAvailableCells(inventoryItem.Size, inventoryItem.Weight);
-            //     if (groupCells == null)
-            //     {
-            //         Debug.LogError("GroupCells not found");
-            //         return;
-            //     }
-            //
-            //     slot = CreateSlot(inventoryItem, groupCells);
-            //    
-            // }
-            //
-            // if(slot != null)
-            
+
+            return false;
+
         }
 
         public void RemoveInventoryItem(InventoryItem inventoryItem)
@@ -137,7 +160,6 @@ namespace Models
                     return slot;
                 }
             }
-            Debug.LogError("Get null slot");
 
             return null;
         }

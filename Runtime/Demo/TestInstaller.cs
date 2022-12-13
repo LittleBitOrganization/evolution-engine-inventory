@@ -26,42 +26,42 @@ namespace Demo
            
         }
 
-        [Button()]
-        private void AddItem1()
-        {
-            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem1));
-            
-        }
-
-        [Button()]
-        private void RemoveItem1()
-        {
-            _model.RemoveInventoryItem(new InventoryItem(_inventoryItem1));
-        }
-        
-        [Button()]
-        private void AddItem2()
-        {
-            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem2));
-            
-        }
-
-        [Button()]
-        private void RemoveItem2()
-        {
-            _model.RemoveInventoryItem(new InventoryItem(_inventoryItem2));
-        }
-        
-        [Button()]
-        private void AddItem3()
-        {
-            _model.TryAddInventoryItem(new InventoryItem(_inventoryItem3));
-        }
-
-        [Button()]
-        private void RemoveItem3()
-        {
-            _model.RemoveInventoryItem(new InventoryItem(_inventoryItem3));
-        }
+        // [Button()]
+        // private void AddItem1()
+        // {
+        //     _model.TryAddInventoryItem(new InventoryItem(_inventoryItem1));
+        //     
+        // }
+        //
+        // [Button()]
+        // private void RemoveItem1()
+        // {
+        //     _model.RemoveInventoryItem(new InventoryItem(_inventoryItem1));
+        // }
+        //
+        // [Button()]
+        // private void AddItem2()
+        // {
+        //     _model.TryAddInventoryItem(new InventoryItem(_inventoryItem2));
+        //     
+        // }
+        //
+        // [Button()]
+        // private void RemoveItem2()
+        // {
+        //     _model.RemoveInventoryItem(new InventoryItem(_inventoryItem2));
+        // }
+        //
+        // [Button()]
+        // private void AddItem3()
+        // {
+        //     _model.TryAddInventoryItem(new InventoryItem(_inventoryItem3));
+        // }
+        //
+        // [Button()]
+        // private void RemoveItem3()
+        // {
+        //     _model.RemoveInventoryItem(new InventoryItem(_inventoryItem3));
+        // }
     }
 }

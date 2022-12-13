@@ -31,6 +31,14 @@ namespace Models
         public void Packing(Matrix matrix)
         {
             matrix.InitAfterRepackingSlots(_repackingSlots);
+            string log = "RepackingSlots\n";
+            foreach (var repackingSlot in _repackingSlots)
+            {
+                log += repackingSlot.SlotItem.Key + " X:" + repackingSlot.IndexStartX + " Y:" +
+                       repackingSlot.IndexStartY + "\n";
+            }
+            Debug.LogError(log);
+            
         }
 
         public bool CheckPackingAndPrepare()
@@ -41,12 +49,15 @@ namespace Models
             
             while (true)
             {
+                Debug.Log("Height: " + (_height - CurrentRow));
                 if (_height - CurrentRow <= 0) return false;
                 if(_items.Count == 0) return true;
                 
                 var sector = FillVerticalSector();
                 EmptySlotsInSector(sector);
                 sector.Log();
+
+                if (_items.Count == 0) return true;
                 
                 CurrentRow += sector.Height;
             }
@@ -96,7 +107,7 @@ namespace Models
                         break;
                     }
 
-                    if (subSector.AllColumnsCompleted())
+                    if (subSector.AllColumnsInited())
                     {
                         break;
                     }
@@ -188,13 +199,13 @@ namespace Models
             //Полвеока на переполнение по вертикали
             if (heightElement > _freeSpace[leftIndex])
                 return null;
-
+            
             for (int i = leftIndex; i < leftIndex + widthElement; i++)
             {
                 _freeSpace[i] -= item.Size.y;
             }
 
-            return new SlotItemInfo(leftIndex, _indexYStart, item);
+            return new SlotItemInfo( leftIndex + _indexXStart, _indexYStart, item);
         }
         
 
@@ -243,10 +254,14 @@ namespace Models
             
 
             var indexYStart = _height - _indexYStart - height;
+            Debug.LogError("IndexXStart = " + indexXStart);
+            Debug.LogError("Width = " + width);
+            indexXStart = _indexXStart + indexXStart - width + 1;
+            Debug.LogError("IndexXStartNew = " + indexXStart);
             
             Debug.LogError($"CreateSubSector: [{indexXStart}, {indexYStart}], [{width}x{height}]");
 
-            return new Sector(width, height, indexXStart - width + 1, indexYStart);
+            return new Sector(width, height, indexXStart, indexYStart);
 
         }
 

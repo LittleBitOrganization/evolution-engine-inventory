@@ -129,6 +129,11 @@ namespace Models
 
         public void InitAfterRepackingSlots(List<SlotItemInfo> repackingSlots)
         {
+            Foreach((i, j) =>
+            {
+                _cells[i,j] = new Cell(_z, new Vector2Int(i, j));
+            });
+            
             foreach (var repackingSlot in repackingSlots)
             {
                 var indexStartX = repackingSlot.IndexStartX;
@@ -147,17 +152,14 @@ namespace Models
                     {
                         _cells[i, j] = new Cell(_z, new Vector2Int(i, j));
                         cells.Add(_cells[i,j]);
-                        
                     }
                 }
                 repackingSlot.SlotItem.AddNewCells(cells);
             }
             
-            Foreach((i, j) =>
-            {
-                if(_cells[i,j] == null)
-                    _cells[i,j] = new Cell(_z, new Vector2Int(i, j));
-            });
+            
+            Debug.LogError("InitAfterRepackingSlots");
+            Log();
         }
     }
 }

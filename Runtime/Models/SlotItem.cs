@@ -35,13 +35,18 @@ namespace Models
         public void AddNewCells(List<Cell> cells)
         {
             _cells = cells;
+            int value = 0;
+            if(_head != null)
+                value = _head.Value;
             
             foreach (var cell in _cells)
             {
                 cell.SetWeight(_weight);
                 cell.SetHash(Hash);
                 cell.SetId(Key);
+                cell.AddValue(value);
             }
+            
             
             _head = _cells.First();
         }
@@ -75,17 +80,14 @@ namespace Models
             CheckKey(inventoryItem);
             CheckValue();
             
-            Debug.LogError($"FreeSpace: {_head.FreeSpace}");
             return _head.FreeSpace >= value;
 
         }
 
         public void TryAdd(InventoryItem inventoryItem, int value = 1)
         {
-            
             if (CanAdd(inventoryItem, value))
             {
-                Debug.LogError($"TryAdd {inventoryItem.Key} in {Hash}: {value}");
                 foreach (var cell in _cells)
                 {
                     cell.AddValue(value);
@@ -118,9 +120,5 @@ namespace Models
             }
         }
 
-        public void MoveToPosition(int i, int j)
-        {
-            
-        }
     }
 }

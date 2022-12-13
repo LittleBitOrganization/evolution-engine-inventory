@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ItemConfig 4x1
   m_EditorClassIdentifier: 
   _sizeCell: {x: 1, y: 4}
-  _weight: 5
-  _key: item_2
+  _weight: 1
+  _key: 4x1

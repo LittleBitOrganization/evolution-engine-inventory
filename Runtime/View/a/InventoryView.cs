@@ -1,38 +1,68 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Configs;
+using Models;
 using NaughtyAttributes;
+using UnityEngine;
 
 public class InventoryView : MonoBehaviour
 {
-    [Header("GameModel")]
-    [SerializeField] private List<GameObject> _models = new();
-    [SerializeField] private List<InventoryItemConfig> _configs = new();
-    
-    [Header("Spawn"), Space]
-    [SerializeField] private GameObject _cell;
-    [SerializeField] private Transform _startPoint;
-    [SerializeField] private Vector2 _size;
+    [Header("GameModel")] [SerializeField] private List<GameObject> _models;
+    [SerializeField] private List<InventoryItemConfig> _configs;
 
-    private Dictionary<InventoryItemConfig, GameObject> _items = new();
-    private List<GameObject> _cells = new();
-    private List<GameObject> _placedItems = new();
+    [SerializeField] private InventoryConfig _inventoryConfig;
+
+    [Header("Spawn"), Space] [SerializeField]
+    private GameObject _cell;
+
+    [SerializeField] private Transform _startPoint;
+    [SerializeField] private Vector2Int _size;
+
+    private Dictionary<string, GameObject> _items = new Dictionary<string, GameObject>();
+    private GameObject[,] _cells;
+    private List<GameObject> _placedItems = new List<GameObject>();
+
+
+    private InventoryModel _inventory;
+
+    private void Awake()
+    {
+        _size = new Vector2Int(_inventoryConfig.Size.x, _inventoryConfig.Size.y);
+        _inventory = new InventoryModel(_inventoryConfig);
+        _inventory.OnRepacking += OnInventoryRepacking;
+        _cells = new GameObject[_size.x, _size.y];
+        for (var index = 0; index < _configs.Count; index++)
+        {
+            var config = _configs[index];
+            var model = _models[index];
+
+            _items.Add(config.Key, model);
+        }
+        
+        Build();
+    }
+
+    private void OnInventoryRepacking(List<SlotItem> slots)
+    {
+        Clear();
+        foreach (var slot in slots)
+        {
+            PlaceItem(slot.Position.x, slot.Position.y, _items[slot.Key]);
+        }
+    }
+    
 
     [Button]
     public void Build()
     {
-        _cells.ForEach(c => DestroyImmediate(c.gameObject));
-        _cells.Clear();
-        
-        for (int j = 0; j < _size.x; j++)
+        for (int i = 0; i < _size.x; i++)
         {
-            for (int i = 0; i < _size.y; i++)
+            for (int j = 0; j < _size.y; j++)
             {
-                var pos = new Vector3(_startPoint.position.x + i, _startPoint.position.y,_startPoint.position.z + j)*1.3f;
+                var pos = new Vector3(_startPoint.position.x + i, _startPoint.position.y, _startPoint.position.z + j);
                 var instantiate = Instantiate(_cell, pos, Quaternion.identity);
                 instantiate.name = $"i{i}-j{j}";
-                _cells.Add(instantiate);
+                _cells[i, j] = instantiate;
             }
         }
     }
@@ -47,36 +77,105 @@ public class InventoryView : MonoBehaviour
     [Button()]
     public void Place2_1()
     {
-        var key = _configs[0];
+        var key = _configs[0].Key;
         PlaceItem(0, 0, _items[key]);
     }
-    
+
     [Button()]
     public void Place1_2()
     {
-        var key = _configs[1];
+        var key = _configs[1].Key;
         PlaceItem(2, 4, _items[key]);
     }
-    
+
     [Button()]
     public void OnEnable()
     {
-        for (var index = 0; index < _configs.Count; index++)
-        {
-            var config = _configs[index];
-            var model = _models[index];
-            
-            _items.Add(config, model);
-        }
+        // for (var index = 0; index < _configs.Count; index++)
+        // {
+        //     var config = _configs[index];
+        //     var model = _models[index];
+        //
+        //     _items.Add(config, model);
+        // }
     }
 
     public void PlaceItem(int x, int y, GameObject item)
     {
-        var value = x-1 + (y-1) * _size.y;
-        var index = Math.Clamp(value, 0, _cells.Count);
-        var position = _cells[(int)index].transform.position;
+        var position = _cells[x, y].transform.position - new Vector3(0.5f, 0, 0.5f);
         var instantiate = Instantiate(item, position, Quaternion.identity);
         _placedItems.Add(instantiate);
     }
-}
 
+
+    [Button()]
+    private void Test()
+    {
+        Add5x2();
+        Add4x1();
+        Add3x1();
+        Add3x1();
+        Add3x1();
+
+        Add2x1();
+        Add2x1();
+        Add2x1();
+
+        Add2x2();
+
+        Add1x1();
+        
+    }
+
+    private void Add(InventoryItemConfig inventoryItemConfig)
+    {
+        if (_inventory.TryAddInventoryItem(new InventoryItem(inventoryItemConfig), out var slot))
+        {
+            Debug.Log(slot.Position);
+            PlaceItem(slot.Position.x, slot.Position.y, _items[slot.Key]);
+        }
+    }
+
+
+    [Button()]
+    private void Add5x2()
+    {
+        Add(_configs[6]);
+    }
+
+    [Button()]
+    private void Add4x1()
+    {
+        Add(_configs[5]);
+    }
+
+    [Button()]
+    private void Add3x1()
+    {
+        Add(_configs[4]);
+    }
+
+    [Button()]
+    private void Add2x2()
+    {
+        Add(_configs[3]);
+    }
+
+    [Button()]
+    private void Add2x1()
+    {
+        Add(_configs[2]);
+    }
+
+    [Button()]
+    private void Add1x3()
+    {
+        Add(_configs[1]);
+    }
+
+    [Button()]
+    private void Add1x1()
+    {
+        Add(_configs[0]);
+    }
+}
