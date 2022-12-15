@@ -39,7 +39,7 @@ namespace Models
 
         private bool CanStackItem(InventoryItem inventoryItem, out SlotItem slot)
         {
-            slot = GetSlot(inventoryItem,v => v.CanAdd(inventoryItem));
+            slot = GetFirstSlot(inventoryItem,v => v.CanAdd(inventoryItem));
             return slot != null;
         }
 
@@ -140,7 +140,7 @@ namespace Models
 
         public void RemoveInventoryItem(InventoryItem inventoryItem)
         {
-            SlotItem slot = GetSlot(inventoryItem, v => v.CanRemove(inventoryItem, 1));
+            SlotItem slot = GetLastSlot(inventoryItem, v => v.CanRemove(inventoryItem, 1));
             if (slot == null)
             {
                 Debug.LogError("Cannot remove item. Not found slots with key: " + inventoryItem.Key);
@@ -150,7 +150,23 @@ namespace Models
             _matrix.Log();
         }
 
-        private SlotItem GetSlot(InventoryItem inventoryItem, Func<SlotItem, bool> predicate)
+        private SlotItem GetLastSlot(InventoryItem inventoryItem, Func<SlotItem, bool> predicate)
+        {
+            var slots = GetSlots(inventoryItem);
+            if (slots.Count > 0)
+            {
+                var slot = slots.LastOrDefault(predicate);
+                if (slot != null)
+                {
+                    Debug.LogError("Slot not found");
+                    return slot;
+                }
+            }
+
+            return null;
+        }
+
+        private SlotItem GetFirstSlot(InventoryItem inventoryItem, Func<SlotItem, bool> predicate)
         {
             var slots = GetSlots(inventoryItem);
             if (slots.Count > 0)

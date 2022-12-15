@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Configs;
 using Models;
 using NaughtyAttributes;
@@ -74,32 +75,6 @@ public class InventoryView : MonoBehaviour
         _placedItems.Clear();
     }
 
-    [Button()]
-    public void Place2_1()
-    {
-        var key = _configs[0].Key;
-        PlaceItem(0, 0, _items[key]);
-    }
-
-    [Button()]
-    public void Place1_2()
-    {
-        var key = _configs[1].Key;
-        PlaceItem(2, 4, _items[key]);
-    }
-
-    [Button()]
-    public void OnEnable()
-    {
-        // for (var index = 0; index < _configs.Count; index++)
-        // {
-        //     var config = _configs[index];
-        //     var model = _models[index];
-        //
-        //     _items.Add(config, model);
-        // }
-    }
-
     public void PlaceItem(int x, int y, GameObject item)
     {
         var position = _cells[x, y].transform.position - new Vector3(0.5f, 0, 0.5f);
@@ -134,6 +109,14 @@ public class InventoryView : MonoBehaviour
             Debug.Log(slot.Position);
             PlaceItem(slot.Position.x, slot.Position.y, _items[slot.Key]);
         }
+    }
+    
+    private void Remove(InventoryItemConfig inventoryItemConfig)
+    {
+        _inventory.RemoveInventoryItem(new InventoryItem(inventoryItemConfig));
+        var last = _placedItems.Last();
+        _placedItems.Remove(last);
+        Destroy(last);
     }
 
 
@@ -177,5 +160,11 @@ public class InventoryView : MonoBehaviour
     private void Add1x1()
     {
         Add(_configs[0]);
+    }
+
+    [Button()]
+    private void Remove1x1()
+    {
+        Remove(_configs[0]);
     }
 }
