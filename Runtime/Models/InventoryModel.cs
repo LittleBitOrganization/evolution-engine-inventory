@@ -84,7 +84,7 @@ namespace Models
         //     return false;
         // }
         
-        public bool TryAddInventoryItem(InventoryItem inventoryItem, out SlotItem slotItem)
+        public bool TryAddInventoryItem(InventoryItem inventoryItem, out SlotItem slotItem, bool tryRepack = false)
         {
             slotItem = null;
             if (CanStackItem(inventoryItem, out var slot))
@@ -94,7 +94,8 @@ namespace Models
                 _matrix.Log();
                 return true;
             }
-            else if (CanPlaceInMatrix(inventoryItem, out var cells))
+
+            if (CanPlaceInMatrix(inventoryItem, out var cells))
             {
                 slot = CreateSlot(inventoryItem, cells);
                 slot.TryAdd(inventoryItem, 1);
@@ -102,7 +103,8 @@ namespace Models
                 _matrix.Log();
                 return true;
             }
-            else
+            
+            if (tryRepack)
             {
                 var canRepacking = RepackingInventory(out var packingInventory);
                 Debug.LogError("Repacking");

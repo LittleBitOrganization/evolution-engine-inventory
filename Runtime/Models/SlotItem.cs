@@ -19,8 +19,6 @@ namespace Models
         public Vector2Int Size => _item.Size;
         public Vector2Int Position => _head.Position;
         
-        
-        
         public SlotItem(InventoryItem item, int weight, List<Cell> cells)
         {
             _item = item;
