@@ -138,16 +138,18 @@ namespace Models
 
         }
 
-        public void RemoveInventoryItem(InventoryItem inventoryItem)
+        public SlotItem RemoveInventoryItem(InventoryItem inventoryItem)
         {
             SlotItem slot = GetLastSlot(inventoryItem, v => v.CanRemove(inventoryItem, 1));
             if (slot == null)
             {
                 Debug.LogError("Cannot remove item. Not found slots with key: " + inventoryItem.Key);
-                return;
+                return null;
             }
             slot.TryRemove(inventoryItem, 1);
             _matrix.Log();
+
+            return slot;
         }
 
         private SlotItem GetLastSlot(InventoryItem inventoryItem, Func<SlotItem, bool> predicate)
